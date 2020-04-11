@@ -1,9 +1,8 @@
 import * as uuid from "uuid";
-import AWS from "aws-sdk";
+import handler from "./libs/handler";
+import dynamoDb from "./libs/dynamodb";
 
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
-
-export function main(event, context, callback){
+export const main = handler(async (event, context) => {
     // Request body is passed in as a JSON encoded string in "event.body"
     const data = JSON.parse(event.body);
 
@@ -26,29 +25,7 @@ export function main(event, context, callback){
         }
     };
 
-    dynamoDB.put(params, (error, data) => {
-        // Set response headers to enable CORS (Cross-Origin Resource Sharing)
-        const headers = {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true
-        };
+    await dynamoDb.put(params);
 
-        if (error) {
-            const response = {
-                statusCode: 500,
-                headers: headers,
-                body: JSON.stringify({ status: false })
-            };
-            callback(null, response);
-            return;
-        }
-
-        const response = {
-            statusCode: 200,
-            headers: headers,
-            body: JSON.stringify(params.Item)
-        };
-        callback(null, response);
-        return;
-    });
-}
+    return params.Item;
+});
