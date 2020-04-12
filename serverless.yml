@@ -36,6 +36,11 @@ provider:
       - dynamodb:DeleteItem
     Resource: "arn:aws:dynamodb:ap-southeast-1:*:*"
 
+# Create our resources with separate CloudFormation templates
+resources:
+  # API Gateway Errors
+  - ${file(resources/api-gateway-errors.yml)}
+
 functions:
   # Defines an HTTP API endpoint that calls the main function in create.js
   # - path: url path is /notes
